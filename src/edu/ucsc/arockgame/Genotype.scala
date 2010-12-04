@@ -3,9 +3,9 @@ package edu.ucsc.arockgame
 import scala.collection.immutable.BitSet
 import java.util.Random
 import java.math._
+import javax.sound.midi._
 
 class Genotype(val dna: BitSet, val len: Int) {
-	def getPhenotype: Phenotype = null
 	
 	override def toString: String = {
 		def concat(i: Int, str: String): String = {
@@ -16,6 +16,8 @@ class Genotype(val dna: BitSet, val len: Int) {
 		}
 		concat(0, "")
 	}
+	
+	def buildTrack(track: Track): Unit = {}
 }
 
 object Genotype {
@@ -34,17 +36,17 @@ object Genotype {
 		x
 	}
 	
-	def breed(a: Genotype, b: Genotype): (Genotype, Genotype) = {
+	def breed(a: Genotype, b: Genotype) = {
 		assert(a.len == b.len)
 		val len = Math.max(a.len, b.len)
 		
 		// crossover
 		val pivot = random.nextInt(len+1)
-		var x = Genotype(a.dna.filter(_ < pivot) | b.dna.filter(pivot <= _), len)
-		var y = Genotype(b.dna.filter(_ < pivot) | a.dna.filter(pivot <= _), len)
+		var x = a.dna.filter(_ < pivot) | b.dna.filter(pivot <= _)
+		var y = b.dna.filter(_ < pivot) | a.dna.filter(pivot <= _)
 		
 		// mutations
-		(mutate(x), mutate(y))
+		(mutate(Genotype(x, len)), mutate(Genotype(y, len)))
 	}
 	
 	def apply(dna: BitSet, len: Int) = new Genotype(dna, len)
