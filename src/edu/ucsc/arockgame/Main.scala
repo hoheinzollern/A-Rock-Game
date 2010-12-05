@@ -11,8 +11,8 @@ object Main extends MetaEventListener {
 	private val BLOCK_SIZE = 4096
 	private val AUDIO_THREAD = "Audio Thread"
 	var sequencer = MidiSystem.getSequencer
-	val x = Genotype(BitSet(0,2,4,6,8,12,14), 16)
-	val y = Genotype(BitSet(0,4,8,12), 16)
+	val x = Genotype(BitSet(0,2,4,6,8,10,12), 128)
+	val y = Genotype(BitSet(0,4,8,12), 128)
 	var (s,t) = Genotype.breed(x,y)
 	
 	def meta(message: MetaMessage) {
