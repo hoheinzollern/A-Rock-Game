@@ -25,16 +25,16 @@ object MelodyPattern extends Phenotype {
 					(if (dna contains j+2) 2 else 0) + (if (dna contains j+3) 1 else 0)
 			val note = PENTATONIC(index) + getNote("G3")
 			
-			if (index != 14) {
+			if (index != 14) { // not pause
 				message = new ShortMessage
-				message.setMessage(ShortMessage.NOTE_ON, 1, note, 127)
+				message.setMessage(ShortMessage.NOTE_ON, 0, note, 127)
 				event = new MidiEvent(message, i*16)
 				track.add(event)
 			}
 			
-			if (index != 15 && previous != -1) {
+			if (index != 15 && previous != -1) { // not hold
 				message = new ShortMessage
-				message.setMessage(ShortMessage.NOTE_OFF, 1, note, 127)
+				message.setMessage(ShortMessage.NOTE_OFF, 0, note, 127)
 				event = new MidiEvent(message, (i+1)*16)
 				track.add(event)
 			}

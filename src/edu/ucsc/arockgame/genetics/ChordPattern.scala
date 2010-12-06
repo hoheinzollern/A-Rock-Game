@@ -6,7 +6,7 @@ import java.util.Random
 object ChordPattern extends Phenotype {
 	
 	val random = new Random
-	val ATTENUATION = 50
+	val ATTENUATION = 70
 	
 	// In the form of a tuple (pitch, displacement, velocity)
 	val PROGRESSIONS = Array[Array[(Int, Int)]](

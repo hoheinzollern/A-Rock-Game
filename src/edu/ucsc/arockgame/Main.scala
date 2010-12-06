@@ -21,13 +21,13 @@ object Main extends MetaEventListener {
 	drumGA.injectIndividual(Genotype(BitSet(0,2,4,6,8,10,12), 128))
 	drumGA.injectIndividual(Genotype(BitSet(0,4,8,12), 128))
 	drumGA.evolve
-	chordGA.injectIndividual(Genotype(BitSet(1,33,65,97), 128))
-	chordGA.injectIndividual(Genotype(BitSet(0,32,65,96), 128))
-	chordGA.injectIndividual(Genotype(BitSet(1,33,65,97), 128))
-	chordGA.injectIndividual(Genotype(BitSet(0,32,65,96), 128))
+	chordGA.injectIndividual(Genotype(BitSet(), 128))
+	chordGA.injectIndividual(Genotype(BitSet(), 128))
+	chordGA.injectIndividual(Genotype(BitSet(), 128))
+	chordGA.injectIndividual(Genotype(BitSet(), 128))
 	chordGA.evolve
-	melodyGA.injectIndividual(Genotype(BitSet(1,33,65,97), 128))
-	melodyGA.injectIndividual(Genotype(BitSet(0,32,65,96), 128))
+	melodyGA.injectIndividual(Genotype(BitSet(), 128))
+	melodyGA.injectIndividual(Genotype(BitSet(), 128))
 	melodyGA.injectIndividual(Genotype(BitSet(1,33,65,97), 128))
 	melodyGA.injectIndividual(Genotype(BitSet(0,32,65,96), 128))
 	melodyGA.evolve
@@ -44,8 +44,9 @@ object Main extends MetaEventListener {
     	val sequence = new Sequence(Sequence.PPQ, 64)
 		
 		val track = sequence.createTrack
-		for (i <- 0 to 100)
-			chordGA.evolve
+		chordGA.evolve
+		melodyGA.evolve
+		drumGA.evolve
 		
 		val b = chordGA.getFittestPair(false)
 		s = b._1
