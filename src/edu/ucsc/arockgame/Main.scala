@@ -21,15 +21,15 @@ object Main extends MetaEventListener {
 	drumGA.injectIndividual(Genotype(BitSet(0,2,4,6,8,10,12), 128))
 	drumGA.injectIndividual(Genotype(BitSet(0,4,8,12), 128))
 	drumGA.evolve
-	chordGA.injectIndividual(Genotype(BitSet(), 128))
-	chordGA.injectIndividual(Genotype(BitSet(), 128))
-	chordGA.injectIndividual(Genotype(BitSet(), 128))
-	chordGA.injectIndividual(Genotype(BitSet(), 128))
+	chordGA.injectIndividual(Genotype(BitSet(0,2,4,6,8,10,12), 128))
+	chordGA.injectIndividual(Genotype(BitSet(0,4,8,12), 128))
+	chordGA.injectIndividual(Genotype(BitSet(0,4,8,12), 128))
+	chordGA.injectIndividual(Genotype(BitSet(1,33,65,97), 128))
 	chordGA.evolve
 	melodyGA.injectIndividual(Genotype(BitSet(), 128))
 	melodyGA.injectIndividual(Genotype(BitSet(), 128))
-	melodyGA.injectIndividual(Genotype(BitSet(1,33,65,97), 128))
-	melodyGA.injectIndividual(Genotype(BitSet(0,32,65,96), 128))
+	melodyGA.injectIndividual(Genotype(BitSet(), 128))
+	melodyGA.injectIndividual(Genotype(BitSet(), 128))
 	melodyGA.evolve
 	var (s,t) = chordGA.getFittestPair(false)
 	
@@ -60,8 +60,8 @@ object Main extends MetaEventListener {
 			println("playing 2")
 			ChordPattern.buildTrack(t, track, 0)
 		}
-    	val melody = sequence.createTrack
-    	MelodyPattern.buildTrack(melodyGA.getFittestPair(false)._1, melody, 0)
+    	//val melody = sequence.createTrack
+    	//MelodyPattern.buildTrack(melodyGA.getFittestPair(false)._1, melody, 0)
     	val chords = sequence.createTrack
     	DrumPattern.buildTrack(drumGA.getFittestPair(false)._1, chords, 0)
 		

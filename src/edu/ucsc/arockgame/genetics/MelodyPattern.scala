@@ -9,7 +9,7 @@ object MelodyPattern extends Phenotype {
 	val PENTATONIC = Array(
 			0, 2, 4, 7, 9,
 			12, 14, 16, 19, 21,
-			24, 26, 28, 31, 33
+			24, 26, 28, 31, 33, 36
 	)
 	
 	def buildTrack(genotype: Genotype, track: Track, displacement: Int) {
@@ -35,7 +35,7 @@ object MelodyPattern extends Phenotype {
 			if (index != 15 && previous != -1) { // not hold
 				message = new ShortMessage
 				message.setMessage(ShortMessage.NOTE_OFF, 0, note, 127)
-				event = new MidiEvent(message, (i+1)*1+ displacement)
+				event = new MidiEvent(message, (i+1)*16+ displacement)
 				track.add(event)
 			}
 		}

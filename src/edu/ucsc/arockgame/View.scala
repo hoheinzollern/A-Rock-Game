@@ -1,6 +1,7 @@
 package edu.ucsc.arockgame
 
 import javax.swing._
+import javax.sound.midi._
 import java.awt._
 import java.awt.event._
 import genetics._
@@ -32,7 +33,7 @@ class DrumCanvas extends PhenotypeCanvas {
 }
 
 class ChordCanvas extends PhenotypeCanvas {
-	setSize(128, 32)
+	setSize(128, 64)
 	
 	override def paint(g: Graphics) {
 		if (genotype == null) return
@@ -77,9 +78,45 @@ class MelodyCanvas extends PhenotypeCanvas {
 }
 
 class GenotypeView(ga: GA) extends JPanel {
-	setLayout(new GridLayout(3,1))
+	setLayout(new GridLayout(4,1))
 	setSize(128,192)
 	val pc = Array[PhenotypeCanvas](null, null, null)
+	val commands = new Commands
+	def currentIndex = commands.sel.getSelectedIndex
+	
+	class Commands extends JPanel {
+		val sel = new JComboBox()
+		sel.addItem("1")
+		sel.addItem("2")
+		sel.addItem("3")
+		val del = new JButton("Delete")
+		class DelActList extends ActionListener {
+			override def actionPerformed(event: ActionEvent) {
+				val index = currentIndex
+				val genotype = pc(index).genotype
+				
+				pc(index).setGenotype(ga.evolve)
+				ga.population -= genotype
+			}
+		}
+		del.addActionListener(new DelActList)
+		val comb = new JButton("Combine")
+		class CombActList extends ActionListener {
+			override def actionPerformed(event: ActionEvent) {
+				ga.generation
+				val it = ga.population.iterator
+				pc(0).setGenotype(it.next._1)
+				pc(1).setGenotype(it.next._1)
+				pc(2).setGenotype(it.next._1)
+			}
+		}
+		comb.addActionListener(new CombActList)
+		setLayout(new FlowLayout)
+		add (sel)
+		add (del)
+		add (comb)
+	}
+	
 }
 
 class DrumView(val ga: GA) extends GenotypeView(ga) {
@@ -90,9 +127,18 @@ class DrumView(val ga: GA) extends GenotypeView(ga) {
 	add(pc(0))
 	add(pc(1))
 	add(pc(2))
-	pc(0).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
-	pc(1).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
-	pc(2).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
+	add (commands)
+	
+	var gt = Genotype("10101010100010001000000000000000100001001000100001000100010010001000100010100101001011000000000000000000000000000000000000000000")
+	pc(0).setGenotype(gt)
+	ga.injectIndividual(gt)
+	gt = Genotype("00000000000000010000100100010000100010001001000100010001010010100101100000000000000000000000000000000000000000010101010100010001")
+	pc(1).setGenotype(gt)
+	ga.injectIndividual(gt)
+	gt = Genotype("10001001000100010001010010100101100000000000000000000000000000000000000000010101010100010001000000000000000100001001000100001000")
+	pc(2).setGenotype(gt)
+	ga.injectIndividual(gt)
+	
 }
 
 class ChordView(val ga: GA) extends GenotypeView(ga) {
@@ -103,9 +149,17 @@ class ChordView(val ga: GA) extends GenotypeView(ga) {
 	add(pc(0))
 	add(pc(1))
 	add(pc(2))
-	pc(0).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
-	pc(1).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
-	pc(2).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
+	add (commands)
+	
+	var gt = Genotype("10101010100010001000000000000000100001001000100001000100010010001000100010100101001011000000000000000000000000000000000000000000")
+	pc(0).setGenotype(gt)
+	ga.injectIndividual(gt)
+	gt = Genotype("00000000000000010000100100010000100010001001000100010001010010100101100000000000000000000000000000000000000000010101010100010001")
+	pc(1).setGenotype(gt)
+	ga.injectIndividual(gt)
+	gt = Genotype("10001001000100010001010010100101100000000000000000000000000000000000000000010101010100010001000000000000000100001001000100001000")
+	pc(2).setGenotype(gt)
+	ga.injectIndividual(gt)
 }
 
 class MelodyView(val ga: GA) extends GenotypeView(ga) {
@@ -116,9 +170,17 @@ class MelodyView(val ga: GA) extends GenotypeView(ga) {
 	add(pc(0))
 	add(pc(1))
 	add(pc(2))
-	pc(0).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
-	pc(1).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
-	pc(2).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
+	add (commands)
+	
+	var gt = Genotype("10101010100010001000000000000000100001001000100001000100010010001000100010100101001011000000000000000000000000000000000000000000")
+	pc(0).setGenotype(gt)
+	ga.injectIndividual(gt)
+	gt = Genotype("00000000000000010000100100010000100010001001000100010001010010100101100000000000000000000000000000000000000000010101010100010001")
+	pc(1).setGenotype(gt)
+	ga.injectIndividual(gt)
+	gt = Genotype("10001001000100010001010010100101100000000000000000000000000000000000000000010101010100010001000000000000000100001001000100001000")
+	pc(2).setGenotype(gt)
+	ga.injectIndividual(gt)
 }
 
 class MelodyRec extends JDialog with KeyListener {
@@ -151,9 +213,7 @@ class MelodyRec extends JDialog with KeyListener {
 		' ' -> 15
 	)
 	
-	def getMelody() {
-		return genotype
-	}
+	def getMelody = genotype
 	
 	var lastKp: Char = '.'
 	var count = 0
@@ -196,19 +256,31 @@ class MelodyRec extends JDialog with KeyListener {
 
 class View extends JFrame {
 	val drumGA = new GA
+	val chordGA = new GA
+	val melodyGA = new GA
 	setTitle("A Rock Game")
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 	setLayout(new FlowLayout)
-	setSize(500,300)
-	add(new DrumView(drumGA))
-	add(new ChordView(drumGA))
-	add(new MelodyView(drumGA))
+	setSize(700,400)
+	val dv = new DrumView(drumGA)
+	add(dv)
+	
+	val cv = new ChordView(chordGA)
+	add(cv)
+	
+	val mv = new MelodyView(melodyGA)
+	add(mv)
 	
 	val insertMelody = new JButton("Record melody")
 	class InsertMelodyListener extends ActionListener {
 		override def actionPerformed(action: ActionEvent) {
 			val mr = new MelodyRec
 			mr.setVisible(true)
+			val genotype = mr.getMelody
+			val index = mv.currentIndex
+			melodyGA.population -= mv.pc(index).genotype
+			mv.pc(index).setGenotype(genotype)
+			melodyGA.injectIndividual(genotype)
 		}
 	}
 	insertMelody.addActionListener(new InsertMelodyListener)
@@ -217,7 +289,23 @@ class View extends JFrame {
 	val play = new JButton("Play patterns")
 	class PlayListener extends ActionListener {
 		override def actionPerformed(action: ActionEvent) {
-			// TODO: do the play stuff
+			val sequencer = MidiSystem.getSequencer
+			sequencer.open
+			val sequence = new Sequence(Sequence.PPQ, 64)
+			val drumTrack = sequence.createTrack
+			val drumGT = dv.pc(dv.currentIndex).genotype
+			DrumPattern.buildTrack(drumGT, drumTrack, 0)
+			drumGA.voteUp(drumGT)
+			val chordTrack = sequence.createTrack
+			val chordGT = cv.pc(cv.currentIndex).genotype
+			ChordPattern.buildTrack(chordGT, chordTrack, 0)
+			val melodyTrack = sequence.createTrack
+			val melodyGT = mv.pc(mv.currentIndex).genotype
+			MelodyPattern.buildTrack(melodyGT, melodyTrack, 0)
+			
+			sequencer.setSequence(sequence)
+			sequencer.setTempoInBPM(60)
+			sequencer.start
 		}
 	}
 	play.addActionListener(new PlayListener)

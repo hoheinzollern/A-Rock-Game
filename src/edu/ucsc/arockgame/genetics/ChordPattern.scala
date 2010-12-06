@@ -6,7 +6,7 @@ import java.util.Random
 object ChordPattern extends Phenotype {
 	
 	val random = new Random
-	val ATTENUATION = 70
+	val ATTENUATION = 30
 	
 	// In the form of a tuple (pitch, displacement, velocity)
 	val PROGRESSIONS = Array[Array[(Int, Int)]](
@@ -44,7 +44,7 @@ object ChordPattern extends Phenotype {
 	def chordOn(track: Track, index: Int, time: Int, up: Boolean) {
 		var message: ShortMessage = null
 		var event: MidiEvent = null
-		var disp = PROGRESSIONS(index).length/2
+		var disp = PROGRESSIONS(index).length
 		if (up) disp = -disp
 		for ((note, vel) <- PROGRESSIONS(index)) {
 			message = new ShortMessage

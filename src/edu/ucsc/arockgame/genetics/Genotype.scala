@@ -50,4 +50,13 @@ object Genotype {
 	}
 	
 	def apply(dna: BitSet, len: Int) = new Genotype(dna, len)
+	
+	def apply(dna: String) = {
+		var bs = BitSet()
+		for (i <- 0 until dna.length) {
+			if (dna.charAt(i)=='1')
+				bs += i
+		}
+		new Genotype(bs, 128)
+	}
 }
