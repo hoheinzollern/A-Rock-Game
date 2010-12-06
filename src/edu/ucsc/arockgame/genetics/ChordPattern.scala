@@ -66,7 +66,7 @@ object ChordPattern extends Phenotype {
 		}
 	}
 	
-	def buildTrack(genotype: Genotype, track: Track) {
+	def buildTrack(genotype: Genotype, track: Track, displacement: Int) {
 		var previous = -1
 		var message: ShortMessage = new ShortMessage
 		message.setMessage(ShortMessage.PROGRAM_CHANGE, 2, 25, 0)
@@ -83,10 +83,10 @@ object ChordPattern extends Phenotype {
 			val hold = (chord == 0) && !up && !pause
 			if (!hold || previous == -1) {
 				if (previous != -1 && previous != chord && !hold) {
-					chordOff(track, previous, j * 16-3)
+					chordOff(track, previous, j * 16-3 + displacement)
 				}
 				if (!pause || previous == -1)
-					chordOn(track, chord, j * 16, up)
+					chordOn(track, chord, j * 16 + displacement, up)
 				previous = chord
 			}
 		}

@@ -12,5 +12,5 @@ trait Phenotype {
 		return ((note.charAt(notes(n).length)-'0')*12 + n)
 	}
 	
-	def buildTrack(genotype: Genotype, track: Track): Unit
+	def buildTrack(genotype: Genotype, track: Track, displacement: Int): Unit
 }

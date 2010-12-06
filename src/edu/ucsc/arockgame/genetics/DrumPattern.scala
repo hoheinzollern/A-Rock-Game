@@ -17,18 +17,18 @@ object DrumPattern extends Phenotype {
     val INSTR = Array(ACOUSTIC_BASS, ACOUSTIC_SNARE, HAND_CLAP, PEDAL_HIHAT,
     		LO_TOM, CLOSED_HIHAT, CRASH_CYMBAL1, HI_TOM, RIDE_BELL)
 	
-	def buildTrack(genotype: Genotype, track: Track): Unit = {
+	def buildTrack(genotype: Genotype, track: Track, displacement: Int): Unit = {
 		var message: ShortMessage = null
 		var event: MidiEvent = null
 		for (i <- genotype.dna) {
 			message = new ShortMessage
 			message.setMessage(ShortMessage.NOTE_ON, 9, INSTR(i / 16), 127)
-			event = new MidiEvent(message, (i%16)*16)
+			event = new MidiEvent(message, (i%16)*16 + displacement)
 			track.add(event)
 			
 			message = new ShortMessage
 			message.setMessage(ShortMessage.NOTE_OFF, 9, INSTR(i / 16), 127)
-			event = new MidiEvent(message, (i%16+1)*16)
+			event = new MidiEvent(message, (i%16+1)*16 + displacement)
 			track.add(event)
 		}
 	}

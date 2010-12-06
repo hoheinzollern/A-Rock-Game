@@ -55,15 +55,15 @@ object Main extends MetaEventListener {
 		println(2+": fit:" + chordGA.population(t)._2)
 		if (random.nextBoolean) {
 			println("playing 1")
-			ChordPattern.buildTrack(s, track)
+			ChordPattern.buildTrack(s, track, 0)
 		} else {
 			println("playing 2")
-			ChordPattern.buildTrack(t, track)
+			ChordPattern.buildTrack(t, track, 0)
 		}
     	val melody = sequence.createTrack
-    	MelodyPattern.buildTrack(melodyGA.getFittestPair(false)._1, melody)
+    	MelodyPattern.buildTrack(melodyGA.getFittestPair(false)._1, melody, 0)
     	val chords = sequence.createTrack
-    	DrumPattern.buildTrack(drumGA.getFittestPair(false)._1, chords)
+    	DrumPattern.buildTrack(drumGA.getFittestPair(false)._1, chords, 0)
 		
 		sequencer.setSequence(sequence)
 		sequencer.setTempoInBPM(60)

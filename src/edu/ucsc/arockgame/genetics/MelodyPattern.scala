@@ -12,7 +12,7 @@ object MelodyPattern extends Phenotype {
 			24, 26, 28, 31, 33
 	)
 	
-	def buildTrack(genotype: Genotype, track: Track) {
+	def buildTrack(genotype: Genotype, track: Track, displacement: Int) {
 		var message: ShortMessage = new ShortMessage
 		message.setMessage(ShortMessage.PROGRAM_CHANGE, 0, 1, 0)
 		track.add(new MidiEvent(message, 0))
@@ -28,14 +28,14 @@ object MelodyPattern extends Phenotype {
 			if (index != 14) { // not pause
 				message = new ShortMessage
 				message.setMessage(ShortMessage.NOTE_ON, 0, note, 127)
-				event = new MidiEvent(message, i*16)
+				event = new MidiEvent(message, i*16+ displacement)
 				track.add(event)
 			}
 			
 			if (index != 15 && previous != -1) { // not hold
 				message = new ShortMessage
 				message.setMessage(ShortMessage.NOTE_OFF, 0, note, 127)
-				event = new MidiEvent(message, (i+1)*16)
+				event = new MidiEvent(message, (i+1)*1+ displacement)
 				track.add(event)
 			}
 		}

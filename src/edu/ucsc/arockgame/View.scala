@@ -25,7 +25,7 @@ class DrumCanvas extends PhenotypeCanvas {
 		for (i <- 0 until 16) {
 			for (j <- 0 until 8) {
 				if (dna contains (i + j * 16))
-					g.fillRect(i * 8, j * 8, i * 8 + 7, j * 8 + 7)
+					g.fillRect(i * 8, j * 8, 8, 8)
 			}
 		}
 	}
@@ -38,9 +38,19 @@ class ChordCanvas extends PhenotypeCanvas {
 		if (genotype == null) return
 		g.setColor(Color.GREEN)
 		val dna = genotype.dna
+		var last = -1
 		for (i <- 0 until 16) {
 			val chord = (if (dna contains i) 2 else 0) + (if (dna contains i+1) 1 else 0)
-			g.fillRect(i * 8, chord * 8, i * 8 + 8, chord * 8 + 8)
+			val up = dna contains i+2
+			val pause = (chord == 0) && !up && (dna contains i+3)
+			val hold = (chord == 0) && !up && !pause
+			if (last != -1 && hold)
+				g.fillRect(i * 8, last * 8, 8, 8)
+			else if (!pause) {
+				last = -1
+			} else {
+				g.fillRect(i * 8, chord * 8, 8, 8)
+			}
 		}
 	}
 }
@@ -60,7 +70,7 @@ class MelodyCanvas extends PhenotypeCanvas {
 			if (k == 15)
 				k = previous
 			if (k != 14)
-				g.fillRect(i * 8, j * 4, (i * 8) + 8, (j * 4) + 4)
+				g.fillRect(i * 8, k * 4, 8, 4)
 			previous = k
 		}
 	}
@@ -81,6 +91,8 @@ class DrumView(val ga: GA) extends GenotypeView(ga) {
 	add(pc(1))
 	add(pc(2))
 	pc(0).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
+	pc(1).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
+	pc(2).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
 }
 
 class ChordView(val ga: GA) extends GenotypeView(ga) {
@@ -92,6 +104,8 @@ class ChordView(val ga: GA) extends GenotypeView(ga) {
 	add(pc(1))
 	add(pc(2))
 	pc(0).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
+	pc(1).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
+	pc(2).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
 }
 
 class MelodyView(val ga: GA) extends GenotypeView(ga) {
@@ -107,15 +121,107 @@ class MelodyView(val ga: GA) extends GenotypeView(ga) {
 	pc(2).setGenotype(new Genotype(BitSet(0,8,64,92), 128))
 }
 
+class MelodyRec extends JDialog with KeyListener {
+	setTitle("Memory recording")
+	setLayout(new FlowLayout)
+	setModal(true)
+	setSize(500, 300)
+	setFocusable(true)
+	addKeyListener(this)
+	val canvas = new MelodyCanvas
+	add(canvas)
+	
+	var genotype: Genotype = new Genotype(BitSet(), 128)
+	var i = 0
+	val noteMap = Map(
+		'1' -> 0,
+		'2' -> 1,
+		'3' -> 2,
+		'4' -> 3,
+		'5' -> 4,
+		'q' -> 5,
+		'w' -> 6,
+		'e' -> 7,
+		'r' -> 8,
+		't' -> 9,
+		'a' -> 10,
+		's' -> 11,
+		'd' -> 12,
+		'f' -> 13,
+		' ' -> 15
+	)
+	
+	def getMelody() {
+		return genotype
+	}
+	
+	var lastKp: Char = '.'
+	var count = 0
+	
+	override def keyReleased(e: KeyEvent) {
+		try {
+			val x = noteMap(lastKp)
+			if ((x & 8) != 0)
+				genotype = Genotype(genotype.dna + i, genotype.len)
+			if ((x & 4) != 0)
+				genotype = Genotype(genotype.dna + (i + 1), genotype.len)
+			if ((x & 2) != 0)
+				genotype = Genotype(genotype.dna + (i + 2), genotype.len)
+			if ((x & 1) != 0)
+				genotype = Genotype(genotype.dna + (i + 3), genotype.len)
+			i += 4
+			count -= 1
+			while (count > 0) {
+				genotype = Genotype(genotype.dna + i, genotype.len)
+				genotype = Genotype(genotype.dna + i + 1, genotype.len)
+				genotype = Genotype(genotype.dna + i + 2, genotype.len)
+				i += 4
+				count -= 1
+			}
+			canvas.setGenotype(genotype)
+			lastKp = '.'
+		} catch {
+			case _ =>
+		}
+	}
+	
+	override def keyPressed(e: KeyEvent) {
+		lastKp = e.getKeyChar
+	}
+	
+	override def keyTyped(e: KeyEvent) {
+		count += 1
+	}
+}
+
 class View extends JFrame {
 	val drumGA = new GA
 	setTitle("A Rock Game")
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
-	setLayout(new GridLayout(1,3))
-	setSize(128*3,192)
+	setLayout(new FlowLayout)
+	setSize(500,300)
 	add(new DrumView(drumGA))
 	add(new ChordView(drumGA))
 	add(new MelodyView(drumGA))
+	
+	val insertMelody = new JButton("Record melody")
+	class InsertMelodyListener extends ActionListener {
+		override def actionPerformed(action: ActionEvent) {
+			val mr = new MelodyRec
+			mr.setVisible(true)
+		}
+	}
+	insertMelody.addActionListener(new InsertMelodyListener)
+	add(insertMelody)
+
+	val play = new JButton("Play patterns")
+	class PlayListener extends ActionListener {
+		override def actionPerformed(action: ActionEvent) {
+			// TODO: do the play stuff
+		}
+	}
+	play.addActionListener(new PlayListener)
+	add(play)
 }
 
 object View {
