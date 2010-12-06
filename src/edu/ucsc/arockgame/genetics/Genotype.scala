@@ -1,4 +1,4 @@
-package edu.ucsc.arockgame
+package edu.ucsc.arockgame.genetics
 
 import scala.collection.immutable.BitSet
 import java.util.Random
