@@ -30,20 +30,22 @@ class GA {
 		val tot = population.foldLeft(0d)(f)
 		var target1 = random.nextFloat * tot
 		var target2 = random.nextFloat * tot
+		if (target2 < target1) {
+			val temp = target1
+			target1 = target2
+			target2 = temp
+		}
 		var t1: Genotype = null
 		var t2: Genotype = null
-		var partial = 0d
 		val it = population.iterator
 		while ((t1 == null || t2 == null) && it.hasNext) {
-			val oldPartial = partial
 			val (genotype, (i, d)) = it.next
-			partial += (if (inv) (1-d) else (d))
-			if (oldPartial <= target1 && target1 < partial)
+			if (t1 == null && target1 < d)
 				t1 = genotype
-			if (oldPartial <= target2 && target2 < partial)
+			if (t2 == null && target2 < d)
 				t2 = genotype
-			if(t1 == t2 && t2 != null)
-				target2 = partial
+			target1 -= d
+			target2 -= d
 		}
 		(t1, t2)
 	}

@@ -5,14 +5,6 @@ import java.util.Random
 
 object ChordPattern extends Phenotype {
 	
-	def getNote(note: String): Int = {
-		val notes = Array("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
-		var n = 0
-		for (i <- 0 until notes.length)
-			if (note.startsWith(notes(i))) n = i
-		return ((note.charAt(notes(n).length)-'0')*12 + n)
-	}
-	
 	val random = new Random
 	val ATTENUATION = 50
 	
@@ -71,24 +63,32 @@ object ChordPattern extends Phenotype {
 			message.setMessage(ShortMessage.NOTE_OFF, 2, note, vel-ATTENUATION)
 			event = new MidiEvent(message, time)
 			track.add(event)
-			println (note)
 		}
 	}
 	
 	def buildTrack(genotype: Genotype, track: Track) {
 		var previous = -1
-		var next = 0
 		var message: ShortMessage = new ShortMessage
 		message.setMessage(ShortMessage.PROGRAM_CHANGE, 2, 25, 0)
 		track.add(new MidiEvent(message, 0))
 		var event: MidiEvent = null
-		next = random.nextInt(PROGRESSIONS.length)
-		for (i <- 0 until 16) {
-			if (previous != -1) {
-				chordOff(track, previous, i * 16-3)
+		
+		val dna = genotype.dna
+		var up = true
+		for (j <- 0 until 32) {
+			val i = j * 4
+			val chord = (if (dna contains i) 2 else 0) + (if (dna contains i+1) 1 else 0)
+			val up = dna contains i+2
+			val pause = (chord == 0) && !up && (dna contains i+3)
+			val hold = (chord == 0) && !up && !pause
+			if (!hold || previous == -1) {
+				if (previous != -1 && previous != chord && !hold) {
+					chordOff(track, previous, j * 16-3)
+				}
+				if (!pause || previous == -1)
+					chordOn(track, chord, j * 16, up)
+				previous = chord
 			}
-			chordOn(track, next, i * 16, random.nextBoolean)
-			previous = next
 		}
 	}
 }

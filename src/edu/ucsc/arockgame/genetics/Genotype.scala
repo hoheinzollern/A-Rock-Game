@@ -26,7 +26,7 @@ object Genotype {
 	def mutate(in: Genotype): Genotype = {
 		var x = in
 		for (i <- 0 until x.len) {
-			if (random.nextDouble < 0.001) {
+			if (random.nextDouble < 0.002) {
 				if (x.dna contains i)
 					x = Genotype(x.dna - i, x.len)
 				else

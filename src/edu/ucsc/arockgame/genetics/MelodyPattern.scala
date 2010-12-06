@@ -16,19 +16,28 @@ object MelodyPattern extends Phenotype {
 		var message: ShortMessage = new ShortMessage
 		message.setMessage(ShortMessage.PROGRAM_CHANGE, 0, 1, 0)
 		track.add(new MidiEvent(message, 0))
-		for (i <- 0 until 16) {
+		val dna = genotype.dna
+		var previous = -1
+		for (i <- 0 until 32) {
+			val j = i * 4
 			var event: MidiEvent = null
-			val note = PENTATONIC(random.nextInt(PENTATONIC.length)) + 45
+			val index = (if (dna contains j) 8 else 0) + (if (dna contains j+1) 4 else 0) +
+					(if (dna contains j+2) 2 else 0) + (if (dna contains j+3) 1 else 0)
+			val note = PENTATONIC(index) + getNote("G3")
 			
-			message = new ShortMessage
-			message.setMessage(ShortMessage.NOTE_ON, 1, note, 127)
-			event = new MidiEvent(message, i*16)
-			track.add(event)
+			if (index != 14) {
+				message = new ShortMessage
+				message.setMessage(ShortMessage.NOTE_ON, 1, note, 127)
+				event = new MidiEvent(message, i*16)
+				track.add(event)
+			}
 			
-			message = new ShortMessage
-			message.setMessage(ShortMessage.NOTE_OFF, 1, note, 127)
-			event = new MidiEvent(message, (i+1)*16)
-			track.add(event)
+			if (index != 15 && previous != -1) {
+				message = new ShortMessage
+				message.setMessage(ShortMessage.NOTE_OFF, 1, note, 127)
+				event = new MidiEvent(message, (i+1)*16)
+				track.add(event)
+			}
 		}
 	}
 
